@@ -720,17 +720,18 @@ NSString *sp_build_info_for_image(NSString *existing, NSString *product, NSStrin
 
 // ---- the region a game plays in (issue #34)
 
-NSArray<NSString *> *sp_regions(void) { return @[@"us", @"eu", @"kr", @"tw"]; }
+NSArray<NSString *> *sp_regions(void) { return @[@"us", @"eu", @"kr", @"tw", @"cn"]; }
 
 NSString *sp_region_for_country(NSString *country) {
     NSString *c = country.uppercaseString;
     if (!c.length) return @"us";
+    if ([c isEqual:@"CN"]) return @"cn";
     if ([c isEqual:@"KR"]) return @"kr";
     if ([@[@"TW", @"HK", @"MO"] containsObject:c]) return @"tw";
     // Europe (Russia, the Caucasus, and Cyprus included), the Middle East, and Africa: Battle.net's Europe.
-    // Everything else, the Americas and Oceania and every country not listed (China, Japan, Southeast
-    // Asia, Central Asia), is the Americas: Slashplayed never offers China (cn), Southeast Asia (sg), or
-    // the test region (xx).
+    // Everything else, the Americas and Oceania and every country not listed (Japan, Southeast
+    // Asia, Central Asia), is the Americas: Slashplayed never offers Southeast Asia (sg) or the test
+    // region (xx). China (CN) maps to the CN region above.
     static NSSet<NSString *> *europe;
     static dispatch_once_t once;
     dispatch_once(&once, ^{
@@ -746,7 +747,7 @@ NSString *sp_region_for_country(NSString *country) {
 }
 
 NSString *sp_region_name(NSString *region) {
-    NSDictionary<NSString *, NSString *> *names = @{@"us": @"Americas", @"eu": @"Europe", @"kr": @"Korea", @"tw": @"Taiwan"};
+    NSDictionary<NSString *, NSString *> *names = @{@"us": @"Americas", @"eu": @"Europe", @"kr": @"Korea", @"tw": @"Taiwan", @"cn": @"China"};
     return names[region.lowercaseString] ?: region.uppercaseString;
 }
 
@@ -758,6 +759,7 @@ NSArray<NSString *> *sp_region_locales(NSString *region) {
         @"eu": @[@"enUS", @"deDE", @"esES", @"frFR", @"itIT", @"ruRU"],
         @"kr": @[@"koKR"],
         @"tw": @[@"zhTW"],
+        @"cn": @[@"zhCN"],
     };
     return locales[region.lowercaseString] ?: @[];
 }
